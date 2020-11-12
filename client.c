@@ -24,15 +24,15 @@ void * doRecieving(void * sockID){
 
 }
 
-int main(){
+int main(int argc, char *argv[]){
 
 	int clientSocket = socket(PF_INET, SOCK_STREAM, 0);
 
 	struct sockaddr_in serverAddr;
 
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(8080);
-	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serverAddr.sin_port = htons(atoi(argv[2]));
+	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
 	if(connect(clientSocket, (struct sockaddr*) &serverAddr, sizeof(serverAddr)) == -1) return 0;
 
@@ -40,17 +40,13 @@ int main(){
 
 	pthread_t thread;
 	pthread_create(&thread, NULL, doRecieving, (void *) &clientSocket );
+    send(clientSocket,argv[3],1024,0);
 
 	while(1){
 
 		char input[1024];
 		scanf("%s",input);
 
-		if(strcmp(input,"LIST") == 0){
-
-			send(clientSocket,input,1024,0);
-
-		}
 		if(strcmp(input,"send") == 0){
 
 			send(clientSocket,input,1024,0);

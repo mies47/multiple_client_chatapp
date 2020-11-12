@@ -21,6 +21,7 @@ struct client{
 	int groupID[100];
 	int groupNumber;
 	struct sockaddr_in clientAddr;
+	char *username;
 	int len;
 
 };
@@ -35,8 +36,13 @@ void * doNetworking(void * ClientDetail){
 	int index = clientDetail -> index;
 	int clientSocket = clientDetail -> sockID;
 	Client[index].groupNumber = 0;
+	char username[1024];
+	int end = recv(clientSocket,username,1024,0);
+	username[end] = '\0';
+	Client[index].username = username;
+	char  sendingString[1024] ;
 
-	printf("Client %d connected.\n",index + 1);
+	printf("Client %s connected.\n",Client[index].username);
 
 	while(1){
 
@@ -47,7 +53,7 @@ void * doNetworking(void * ClientDetail){
 		char output[1024];
 		
 		if(strcmp(data,"join") == 0){
-			printf("join requested by Client %d\n" , index + 1);
+			printf("join requested by Client %s\n" , Client[index].username);
 			read = recv(clientSocket,data,1024,0);
 			data[read] = '\0';
 			int id = atoi(data);
@@ -63,21 +69,6 @@ void * doNetworking(void * ClientDetail){
 			}
 
 			continue;
-		}
-		if(strcmp(data,"LIST") == 0){
-
-			int l = 0;
-
-			for(int i = 0 ; i < clientCount ; i ++){
-
-				if(i != index)
-					l += snprintf(output + l,1024,"Client %d is at socket %d.\n",i + 1,Client[i].sockID);
-
-			}
-
-			send(clientSocket,output,1024,0);
-			continue;
-
 		}
 		if(strcmp(data,"send") == 0){
 
@@ -98,13 +89,17 @@ void * doNetworking(void * ClientDetail){
 				}
 			}
 			if(isMember == 0) continue;
+			strcpy(sendingString , Client[index].username);
+			strcat(sendingString , ": ");
+			strcat(sendingString , data);
 			for(int i = 0 ; i < clientCount ; i++){
 				for(int j = 0 ; j < Client[i].groupNumber ; j++){
 					if(Client[i].groupID[j] == id){
-						send(Client[i].sockID,data,1024,0);			
+						send(Client[i].sockID,sendingString,1024,0);	
 					}
 				}
 			}
+			memset(sendingString , 0 , strlen(sendingString));
 
 			continue;
 
@@ -128,14 +123,15 @@ void * doNetworking(void * ClientDetail){
 
 }
 
-int main(){
+int main(int argc, char *argv[]){
 
 	int serverSocket = socket(PF_INET, SOCK_STREAM, 0);
 
 	struct sockaddr_in serverAddr;
 
+
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(8080);
+	serverAddr.sin_port = htons(atoi(argv[1]));
 	serverAddr.sin_addr.s_addr = htons(INADDR_ANY);
 
 
@@ -143,7 +139,7 @@ int main(){
 
 	if(listen(serverSocket,1024) == -1) return 0;
 
-	printf("Server started listenting on port 8080 ...........\n");
+	printf("Server started listenting on port %s ...........\n" , argv[1]);
 
 	while(1){
 
