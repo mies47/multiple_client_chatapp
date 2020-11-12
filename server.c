@@ -25,13 +25,7 @@ struct client{
 
 };
 
-// struct group{
-// 	int ID;
-// 	int memberCount;
-// 	int member[100];
-// };
 
-// struct group Groups[100];
 struct client Client[1024];
 pthread_t thread[1024];
 
@@ -96,6 +90,14 @@ void * doNetworking(void * ClientDetail){
 			read = recv(clientSocket,data,1024,0);
 			data[read] = '\0';
 
+			int isMember = 0;
+			
+			for(int i = 0 ; i < Client[index].groupNumber ; i++){
+				if(Client[index].groupID[i] == id){
+					isMember = 1;
+				}
+			}
+			if(isMember == 0) continue;
 			for(int i = 0 ; i < clientCount ; i++){
 				for(int j = 0 ; j < Client[i].groupNumber ; j++){
 					if(Client[i].groupID[j] == id){
@@ -104,6 +106,20 @@ void * doNetworking(void * ClientDetail){
 				}
 			}
 
+			continue;
+
+		}
+		if(strcmp(data,"leave") == 0){
+			read = recv(clientSocket,data,1024,0);
+			data[read] = '\0';
+
+			int id = atoi(data);
+
+			for(int i = 0 ; i < Client[index].groupNumber ; i++){
+				if(Client[index].groupID[i] == id){
+					Client[index].groupID[i] = -1;
+				}
+			}
 		}
 
 	}
