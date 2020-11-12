@@ -156,7 +156,5 @@ int main(){
  
 	}
 
-	for(int i = 0 ; i < clientCount ; i ++)
-		pthread_join(thread[i],NULL);
 
 }

@@ -78,6 +78,14 @@ int main(){
 			send(clientSocket,input,1024,0);
 
 		}
+        if(strcmp(input,"quit") == 0){
+			
+			pthread_cancel(thread);
+            shutdown(clientSocket , 2);
+            return 0;
+
+		}
+        
 
 	}
 
