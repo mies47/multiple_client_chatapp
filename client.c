@@ -62,6 +62,14 @@ int main(){
 			send(clientSocket,input,1024,0);
 
 		}
+        if(strcmp(input,"join") == 0){
+
+			send(clientSocket,input,1024,0);
+			
+			scanf("%s\n",input);
+			send(clientSocket,input,1024,0);
+
+		}
 
 	}
 

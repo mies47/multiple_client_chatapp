@@ -27,6 +27,7 @@ struct client{
 
 struct group{
 	int ID;
+	int memberCount;
 	int member[100];
 };
 
@@ -51,11 +52,37 @@ void * doNetworking(void * ClientDetail){
 		char output[1024];
 		
 		if(strcmp(data,"join") == 0){
+			printf("join requested by Client %d\n" , index + 1);
 			read = recv(clientSocket,data,1024,0);
 			data[read] = '\0';
+			int id = atoi(data);
+			int exist = 0;
+			for(int i = 0 ; i< groupsNum ; i++){
+				if(Groups[i].ID == id){
+					int memberExists = 0;
+					for(int j = 0 ; j < Groups[i].memberCount ; j++){
+						if(Groups[i].member[j] == clientSocket){
+							memberExists = 1;
+							exist = 1;
+							break;
+						}
+					}
+					if(memberExists == 0){
+						Groups[i].member[Groups[i].memberCount] = clientSocket;
+						Groups[i].memberCount++;
+						exist = 1;
+						break;
+					}
+				}
+			}
+			if(exist == 0){
+				Groups[groupsNum].ID = id;
+				Groups[groupsNum].member[0] = clientSocket;
+				Groups[groupsNum].memberCount = 1;
+				groupsNum++;
+			}
 
-			int id = atoi(data) - 1;
-			for(int i = 0 ; i< groupsNum ; i++)
+			continue;
 		}
 		if(strcmp(data,"LIST") == 0){
 
