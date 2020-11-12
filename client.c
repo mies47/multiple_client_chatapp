@@ -51,7 +51,7 @@ int main(){
 			send(clientSocket,input,1024,0);
 
 		}
-		if(strcmp(input,"SEND") == 0){
+		if(strcmp(input,"send") == 0){
 
 			send(clientSocket,input,1024,0);
 			
@@ -66,7 +66,7 @@ int main(){
 
 			send(clientSocket,input,1024,0);
 			
-			scanf("%s\n",input);
+			scanf("%s",input);
 			send(clientSocket,input,1024,0);
 
 		}
