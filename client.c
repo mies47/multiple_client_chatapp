@@ -75,9 +75,9 @@ int main(int argc, char *argv[]){
 
 		}
         if(strcmp(input,"quit") == 0){
-			
+			send(clientSocket,input,1024,0);
+
 			pthread_cancel(thread);
-            shutdown(clientSocket , 2);
             return 0;
 
 		}

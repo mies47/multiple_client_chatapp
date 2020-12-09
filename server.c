@@ -115,6 +115,10 @@ void * doNetworking(void * ClientDetail){
 					Client[index].groupID[i] = -1;
 				}
 			}
+			continue;
+		}
+		if(strcmp(data,"quit") == 0){
+			pthread_cancel(pthread_self());
 		}
 
 	}
